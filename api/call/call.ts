@@ -18,12 +18,25 @@ interface Response {
 
 let error: Error = {};
 
-export const createCall = async (name: string, code: string): Promise<CreateResponse> => {
+export const createCall = async (
+  name: string,
+  sipuniCallId: number,
+  amoPipelineId: number
+): Promise<CreateResponse> => {
   console.debug('api/call/calls/createCall/name', name); //DELETE
-  console.debug('api/call/calls/createCall/code', code); //DELETE
+  console.debug('api/call/calls/createCall/sipuniCallId', sipuniCallId); //DELETE
+  console.debug('api/call/calls/createCall/amoPipelineId', amoPipelineId); //DELETE
+
+  const payload = {
+    name,
+    amo_pipeline_id: amoPipelineId,
+    sipuni_call_id: sipuniCallId,
+  };
+
+  console.debug('api/call/calls/createCall/payload', payload); //DELETE
 
   try {
-    const response = await api.post(`calls`, { name, code, });
+    const response = await api.post(`calls`, payload);
 
     console.debug('api/call/calls/createCall/response', response); //DELETE
 
@@ -55,13 +68,27 @@ export const fetchCallDetail = async (uuid: string): Promise<FetchResponse> => {
     return Object.assign(error, e).response;
   }
 };
-export const updateCall = async (uuid: string, name: string, code: string): Promise<Response> => {
+export const updateCall = async (
+  uuid: string,
+  name: string,
+  sipuniCallId: number,
+  amoPipelineId: number
+): Promise<Response> => {
   console.debug('api/call/calls/updateCall/uuid', uuid); //DELETE
   console.debug('api/call/calls/updateCall/name', name); //DELETE
-  console.debug('api/call/calls/updateCall/code', code); //DELETE
+  console.debug('api/call/calls/updateCall/sipuniCallId', sipuniCallId); //DELETE
+  console.debug('api/call/calls/updateCall/amoPipelineId', amoPipelineId); //DELETE
+
+  const payload = {
+    name,
+    amo_pipeline_id: amoPipelineId,
+    sipuni_call_id: sipuniCallId,
+  };
+
+  console.debug('api/call/calls/createCall/payload', payload); //DELETE
 
   try {
-    const response = await api.put(`calls/${uuid}`, { name, code, });
+    const response = await api.put(`calls/${uuid}`, payload);
 
     console.debug('api/call/calls/updateCall/response', response); //DELETE
 

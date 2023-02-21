@@ -28,7 +28,7 @@
 
     .call-detail-page__card--body
       v-form.call-detail-page__call-info(
-        v-if="callFetched"
+        v-show="callFetched"
         ref="form",
         v-model="meetingValid",
         lazy-validation
@@ -59,7 +59,7 @@
         )
 
       .call-detail-page__call-info(
-        v-if="!callFetched"
+        v-show="!callFetched"
       )
         Skeleton.call-detail-page__form-input(
           v-for="skeleton in 3"
@@ -142,7 +142,11 @@ export default {
         console.debug("pages/call/methods/save/new"); //DELETE
 
         //TODO: create new call
-        const response = await createCall(this.callName, this.clientSecret);
+        const response = await createCall(
+          this.callName,
+          this.sipuniCallId,
+          this.amoPipelineId
+        );
 
         console.debug("pages/call/methods/save/new/response", response); //DELETE
 
@@ -162,7 +166,8 @@ export default {
         const response = await updateCall(
           this.uuidcall,
           this.callName,
-          this.clientSecret
+          this.sipuniCallId,
+          this.amoPipelineId
         );
 
         console.debug("pages/call/methods/save/not-new/response", response); //DELETE
