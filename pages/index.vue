@@ -1,57 +1,57 @@
 <template lang="pug">
-.webinar-list-page
-  v-card.webinar-list-page__card(
+.call-list-page
+  v-card.call-list-page__card(
     max-width="1000",
     min-width="800",
     elevation="7"
   )
-    .webinar-list-page__card--head
-      v-list-item-title.text-h5.webinar-list-page__title Комнаты Zoom
-      v-btn.mr-4.webinar-list-page--add-webinar(
+    .call-list-page__card--head
+      v-list-item-title.text-h5.call-list-page__title Списки обзвонов
+      v-btn.mr-4.call-list-page--add-call(
         color="blue",
         width="128",
         height="36",
-        :disabled="!webinarsFetched",
-        @click="addWebinar"
+        :disabled="!callsFetched",
+        @click="addCall"
       ) Добавить
 
-    .webinar-list-page__card--body
-      .webinar-list-page__list
-        Skeleton.webinar-list-page__list-item(
+    .call-list-page__card--body
+      .call-list-page__list
+        Skeleton.call-list-page__list-item(
           v-for="skeleton in 3",
-          v-if="!webinarsFetched",
+          v-if="!callsFetched",
           height="60"
         )
-        v-card.webinar-list-page__list-item(
-          v-for="(webinar, index) in webinars",
-          :key="webinar.uuid",
+        v-card.call-list-page__list-item(
+          v-for="(call, index) in calls",
+          :key="call.uuid",
           max-width="900",
           min-width="700",
           elevation="3"
         )
-          .webinar-list-page__list-item--name {{ webinar.name }}
-          .webinar-list-page__list-item--actions
+          .call-list-page__list-item--name {{ call.name }}
+          .call-list-page__list-item--actions
             v-btn(
               icon,
               elevation="0",
               height="32",
               width="32",
-              :disabled="webinar.deleteLoader",
-              @click="editWebinar({ uuid: webinar.uuid })"
+              :disabled="call.deleteLoader",
+              @click="editcall({ uuid: call.uuid })"
             )
-              v-icon.webinar-list-page__list-item--actions_edit(
+              v-icon.call-list-page__list-item--actions_edit(
                 color="#607d8b"
               ) mdi-pencil
 
             v-btn(
-              icon,
-              elevation="0",
-              height="32",
-              width="32",
-              :loading="webinar.deleteLoader",
-              @click="deleteWebinar({ uuid: webinar.uuid })"
+              icon
+              elevation="0"
+              height="32"
+              width="32"
+              :loading="call.deleteLoader"
+              @click="deleteCall({ uuid: call.uuid })"
             )
-              v-icon.webinar-list-page__list-item--actions_delete(
+              v-icon.call-list-page__list-item--actions_delete(
                 color="#ff5252"
               ) mdi-delete
 
@@ -61,16 +61,16 @@
       v-card-text Вы действительно хотите удалить данный вебинар "Вебинар 123", включая все привязанные подарки и их настройки?
       v-card-actions
         v-spacer
-        v-btn(color="green darken-1", text, @click="cancelDeleteWebinar") Отменить
-        v-btn(color="error darken-1", text, @click="approveDeleteWebinar") Удалить
+        v-btn(color="green darken-1", text, @click="canceldeleteCall") Отменить
+        v-btn(color="error darken-1", text, @click="approvedeleteCall") Удалить
 </template>
 
 <script>
 import { mapState } from "pinia";
 import { mapActions } from "pinia";
-import { useWebinarStore } from "@/store/WebinarStore";
-import { fetchWebinars } from "@/api/webinar/webinars";
-import { deleteWebinar } from "@/api/webinar/webinar";
+import { usecallstore } from "@/store/CallStore";
+import { fetchCalls } from "@/api/call/calls";
+import { deleteCall } from "@/api/call/call";
 import Skeleton from "@/components/ui-embedded/Skeleton";
 
 export default {
@@ -82,14 +82,14 @@ export default {
   data() {
     return {
       dialog: false,
-      webinars: [],
-      webinarsFetched: false,
-      deleteWebinarUuid: null,
+      calls: [],
+      callsFetched: false,
+      deleteCallUuid: null,
     };
   },
   computed: {
-    ...mapState(useWebinarStore, {
-      webinarsStore: "webinarList",
+    ...mapState(usecallstore, {
+      callsStore: "callList",
     }),
   },
 
@@ -98,70 +98,70 @@ export default {
     /* GETTERS */
     /* SETTERS */
     /* HANDLERS */
-    addWebinar() {
+    addCall() {
       // console.debug("add"); //DELETE
 
       this.$router.push({
-        name: "webinar",
+        name: "call",
       });
     },
-    editWebinar({ uuid }) {
-      // console.debug("pages/webinars/methods/editWebinar", uuid); //DELETE
+    editcall({ uuid }) {
+      // console.debug("pages/calls/methods/editcall", uuid); //DELETE
 
       this.$router.push({
-        name: "webinar",
+        name: "call",
         query: {
-          uuidWebinar: uuid,
+          uuidcall: uuid,
         },
       });
     },
-    deleteWebinar({ uuid }) {
-      // console.debug("pages/webinars/methods/deleteWebinar", uuid); //DELETE
+    deleteCall({ uuid }) {
+      // console.debug("pages/calls/methods/deleteCall", uuid); //DELETE
 
-      this.deleteWebinarUuid = uuid;
+      this.deleteCallUuid = uuid;
       this.dialog = true;
     },
-    async approveDeleteWebinar() {
-      // console.debug("pages/webinars/methods/approveDeleteWebinar"); //DELETE
+    async approvedeleteCall() {
+      // console.debug("pages/calls/methods/approvedeleteCall"); //DELETE
 
       this.dialog = false;
 
-      if (this.deleteWebinarUuid) {
-        // console.debug("pages/webinars/methods/approveDeleteWebinar/delete"); //DELETE
+      if (this.deleteCallUuid) {
+        // console.debug("pages/calls/methods/approvedeleteCall/delete"); //DELETE
 
-        this.webinars.forEach((webinar) => {
-          if (webinar.uuid === this.deleteWebinarUuid) {
+        this.calls.forEach((call) => {
+          if (call.uuid === this.deleteCallUuid) {
             // console.debug(
-            //   "pages/webinars/methods/approveDeleteWebinar/deleteWebinarUuid",
-            //   this.deleteWebinarUuid
+            //   "pages/calls/methods/approvedeleteCall/deleteCallUuid",
+            //   this.deleteCallUuid
             // ); //DELETE
 
-            webinar.deleteLoader = true;
+            call.deleteLoader = true;
           }
         });
 
-        const response = await deleteWebinar(this.deleteWebinarUuid);
+        const response = await deleteCall(this.deleteCallUuid);
 
         // console.debug(
-        //   "pages/webinars/methods/approveDeleteWebinar/response",
+        //   "pages/calls/methods/approvedeleteCall/response",
         //   response
         // ); //DELETE
 
         if (response.status === 200) {
-          this.webinars = this.webinars.filter(
-            (webinar) => webinar.uuid !== this.deleteWebinarUuid
+          this.calls = this.calls.filter(
+            (call) => call.uuid !== this.deleteCallUuid
           );
         } else {
           alert("Ошибка при удалении");
         }
       }
 
-      this.deleteWebinarUuid = null;
+      this.deleteCallUuid = null;
     },
-    cancelDeleteWebinar() {
-      // console.debug("pages/webinars/methods/cancelDeleteWebinar"); //DELETE
+    canceldeleteCall() {
+      // console.debug("pages/calls/methods/canceldeleteCall"); //DELETE
 
-      this.deleteWebinarUuid = null;
+      this.deleteCallUuid = null;
       this.dialog = false;
     },
 
@@ -170,25 +170,25 @@ export default {
   },
 
   async created() {
-    // console.debug("pages/webinars/created", this.$route); //DELETE
+    // console.debug("pages/calls/created", this.$route); //DELETE
 
-    const response = await fetchWebinars();
+    const response = await fetchCalls();
 
-    this.webinars = response.webinars.data.map((webinar) => ({
-      ...webinar,
+    this.calls = response.calls.data.map((call) => ({
+      ...call,
       deleteLoader: false,
     }));
-    this.webinarsFetched = true;
+    this.callsFetched = true;
 
-    // console.debug("pages/webinars/webinars", this.webinars); //DELETE
-    // console.debug("pages/webinars/webinarsFetched", this.webinarsFetched); //DELETE
+    // console.debug("pages/calls/calls", this.calls); //DELETE
+    // console.debug("pages/calls/callsFetched", this.callsFetched); //DELETE
   },
   mounted() {},
 };
 </script>
 
 <style lang="scss">
-.webinar-list-page {
+.call-list-page {
   box-sizing: border-box;
   padding: 24px 0;
   width: 100%;
@@ -200,7 +200,7 @@ export default {
   justify-content: center;
   align-items: flex-start;
 
-  &--add-webinar {
+  &--add-call {
     margin: 0 !important;
   }
 

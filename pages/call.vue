@@ -1,32 +1,32 @@
 <template lang="pug">
-.webinar-detail-page
-  v-card.webinar-detail-page__card(width="800", elevation="7")
-    .webinar-detail-page__card--head
-      v-list-item-title.text-h5.webinar-detail-page__title {{ meetingName }}
-      .webinar-detail-page__card--actions
-        v-btn.webinar-detail-page__card--actions-item(
+.call-detail-page
+  v-card.call-detail-page__card(width="800", elevation="7")
+    .call-detail-page__card--head
+      v-list-item-title.text-h5.call-detail-page__title {{ meetingName }}
+      .call-detail-page__card--actions
+        v-btn.call-detail-page__card--actions-item(
           color="blue",
           width="128",
           height="36",
           :disabled="meetingSaveLoader",
           @click="back"
         ) Назад
-        v-btn.mr-4.webinar-detail-page__card--actions-item(
+        v-btn.mr-4.call-detail-page__card--actions-item(
           color="success",
           width="128",
           height="36",
           :disabled="!meetingValid",
           :loading="meetingSaveLoader",
-          @click="saveWebinar"
+          @click="savecall"
         ) Сохранить
 
-    .webinar-detail-page__card--body
-      v-form.webinar-detail-page__webinar-info(
+    .call-detail-page__card--body
+      v-form.call-detail-page__call-info(
         ref="form",
         v-model="meetingValid",
         lazy-validation
       )
-        v-text-field.webinar-detail-page__form-input(
+        v-text-field.call-detail-page__form-input(
           v-model="meetingName",
           label="Название комнаты Zoom",
           variant="outlined",
@@ -34,7 +34,7 @@
           required,
           :rules="meetingNameRules"
         )
-        v-text-field.webinar-detail-page__form-input(
+        v-text-field.call-detail-page__form-input(
           v-model="accountId",
           label="Account ID",
           variant="outlined",
@@ -42,7 +42,7 @@
           required,
           :rules="accountIdRules"
         )
-        v-text-field.webinar-detail-page__form-input(
+        v-text-field.call-detail-page__form-input(
           v-model="clientId",
           label="Client ID",
           variant="outlined",
@@ -50,7 +50,7 @@
           required,
           :rules="clientIdRules"
         )
-        v-text-field.webinar-detail-page__form-input(
+        v-text-field.call-detail-page__form-input(
           v-model="clientSecret",
           label="Client secret",
           variant="outlined",
@@ -75,10 +75,10 @@
 
 <script>
 import {
-  createWebinar,
-  fetchWebinarDetail,
-  updateWebinar,
-} from "@/api/webinar/webinar";
+  createCall,
+  fetchCallDetail,
+  updateCall,
+} from "@/api/call/call"
 
 export default {
   components: {},
@@ -101,11 +101,11 @@ export default {
     };
   },
   computed: {
-    uuidWebinar() {
-      return this.$route.query.uuidWebinar;
+    uuidcall() {
+      return this.$route.query.uuidcall;
     },
     isNew() {
-      return !this.uuidWebinar;
+      return !this.uuidcall;
     },
   },
 
@@ -115,83 +115,83 @@ export default {
     /* SETTERS */
     /* HANDLERS */
     back() {
-      // console.debug("webinar/back"); //DELETE
+      // console.debug("call/back"); //DELETE
 
       this.meetingEscapeDialog = true;
     },
     approveBack() {
-      // console.debug("webinar/approveBack"); //DELETE
+      // console.debug("call/approveBack"); //DELETE
 
       this.meetingEscapeDialog = false;
       this.$router.push({ name: "index" });
     },
-    async saveWebinar() {
-      // console.debug("pages/webinar/methods/save/isNew", this.isNew); //DELETE
+    async savecall() {
+      // console.debug("pages/call/methods/save/isNew", this.isNew); //DELETE
 
       this.meetingSaveLoader = true;
 
-      let uuidWebinar = "";
+      let uuidcall = "";
 
       if (this.isNew) {
-        // console.debug("pages/webinar/methods/save/new"); //DELETE
+        // console.debug("pages/call/methods/save/new"); //DELETE
 
-        //TODO: create new Webinar
-        const response = await createWebinar(
+        //TODO: create new call
+        const response = await createCall(
           this.meetingName,
           this.clientSecret
         );
 
-        // console.debug("pages/webinar/methods/save/new/response", response); //DELETE
+        // console.debug("pages/call/methods/save/new/response", response); //DELETE
 
         if (response.status === 200) {
-          uuidWebinar = response.webinarUuid;
+          uuidcall = response.callUuid;
 
           this.$router.push({
-            name: "webinar",
+            name: "call",
             query: {
-              uuidWebinar: response.webinarUuid,
+              uuidcall: response.callUuid,
             },
           });
         }
       } else {
-        // console.debug("pages/webinar/methods/save/not-new"); //DELETE
+        // console.debug("pages/call/methods/save/not-new"); //DELETE
 
-        const response = await updateWebinar(
-          this.uuidWebinar,
+        const response = await updateCall(
+          this.uuidcall,
           this.meetingName,
           this.clientSecret
         );
 
-        // console.debug("pages/webinar/methods/save/not-new/response", response); //DELETE
+        // console.debug("pages/call/methods/save/not-new/response", response); //DELETE
 
-        uuidWebinar = this.uuidWebinar;
+        uuidcall = this.uuidcall;
       }
 
-      await this.fetch(uuidWebinar);
+      await this.fetch(uuidcall);
 
       this.meetingSaveLoader = false;
     },
 
     /* HELPERS */
     /* ACTIONS */
-    async fetch(uuidWebinar) {
-      // console.debug("pages/webinar/methods/fetch", this.isNew); //DELETE
-      // console.debug("pages/webinar/methods/this.uuidWebinar", this.uuidWebinar); //DELETE
-      // console.debug("pages/webinar/methods/uuidWebinar", uuidWebinar); //DELETE
+    async fetch(uuidcall) {
+      // console.debug("pages/call/methods/fetch", this.isNew); //DELETE
+      // console.debug("pages/call/methods/this.uuidcall", this.uuidcall); //DELETE
+      // console.debug("pages/call/methods/uuidcall", uuidcall); //DELETE
 
-      const response = await fetchWebinarDetail(
-        this.uuidWebinar || uuidWebinar
+      const response = await fetchCallDetail(
+        this.uuidcall || uuidcall
       );
 
-      // console.debug("pages/webinar/methods/fetch/response", response); //DELETE
+      // console.debug("pages/call/methods/fetch/response", response); //DELETE
 
       if (response.status === 200) {
-        const webinar = response.webinar.data;
+        const call = response.call.data;
 
-        // console.debug("pages/webinar/methods/fetch/response/webinar", webinar); //DELETE
+        // console.debug("pages/call/methods/fetch/response/call", call); //DELETE
 
-        this.meetingName = webinar.name;
-        this.clientSecret = webinar.code;
+        this.meetingName = call.name;
+        this.clientSecret = call.code;
       } else {
         alert("Ошибка при получении вебинара");
       }
@@ -199,9 +199,9 @@ export default {
   },
 
   async created() {
-    // console.debug("pages/webinar/created/route", this.$route); //DELETE
-    // console.debug("pages/webinar/created/uuidWebinar", this.uuidWebinar); //DELETE
-    // console.debug("pages/webinar/created/isNew", this.isNew); //DELETE
+    // console.debug("pages/call/created/route", this.$route); //DELETE
+    // console.debug("pages/call/created/uuidcall", this.uuidcall); //DELETE
+    // console.debug("pages/call/created/isNew", this.isNew); //DELETE
 
     if (!this.isNew) {
       await this.fetch();
@@ -212,7 +212,7 @@ export default {
 </script>
 
 <style lang="scss">
-.webinar-detail-page {
+.call-detail-page {
   box-sizing: border-box;
   padding: 24px 0;
   width: 100%;
