@@ -71,7 +71,7 @@ import { mapActions } from "pinia";
 import { usecallstore } from "@/store/CallStore";
 import { fetchCalls } from "@/api/call/calls";
 import { deleteCall } from "@/api/call/call";
-import Skeleton from "@/components/ui-embedded/Skeleton";
+import Skeleton from "@/components/AppSkeleton";
 
 export default {
   components: {
