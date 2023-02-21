@@ -99,14 +99,14 @@ export default {
     /* SETTERS */
     /* HANDLERS */
     addCall() {
-      // console.debug("add"); //DELETE
+      console.debug("add"); //DELETE
 
       this.$router.push({
         name: "call",
       });
     },
     editcall({ uuid }) {
-      // console.debug("pages/calls/methods/editcall", uuid); //DELETE
+      console.debug("pages/calls/methods/editcall", uuid); //DELETE
 
       this.$router.push({
         name: "call",
@@ -116,25 +116,25 @@ export default {
       });
     },
     deleteCall({ uuid }) {
-      // console.debug("pages/calls/methods/deleteCall", uuid); //DELETE
+      console.debug("pages/calls/methods/deleteCall", uuid); //DELETE
 
       this.deleteCallUuid = uuid;
       this.dialog = true;
     },
     async approvedeleteCall() {
-      // console.debug("pages/calls/methods/approvedeleteCall"); //DELETE
+      console.debug("pages/calls/methods/approvedeleteCall"); //DELETE
 
       this.dialog = false;
 
       if (this.deleteCallUuid) {
-        // console.debug("pages/calls/methods/approvedeleteCall/delete"); //DELETE
+        console.debug("pages/calls/methods/approvedeleteCall/delete"); //DELETE
 
         this.calls.forEach((call) => {
           if (call.uuid === this.deleteCallUuid) {
-            // console.debug(
-            //   "pages/calls/methods/approvedeleteCall/deleteCallUuid",
-            //   this.deleteCallUuid
-            // ); //DELETE
+            console.debug(
+              "pages/calls/methods/approvedeleteCall/deleteCallUuid",
+              this.deleteCallUuid
+            ); //DELETE
 
             call.deleteLoader = true;
           }
@@ -142,10 +142,10 @@ export default {
 
         const response = await deleteCall(this.deleteCallUuid);
 
-        // console.debug(
-        //   "pages/calls/methods/approvedeleteCall/response",
-        //   response
-        // ); //DELETE
+        console.debug(
+          "pages/calls/methods/approvedeleteCall/response",
+          response
+        ); //DELETE
 
         if (response.status === 200) {
           this.calls = this.calls.filter(
@@ -159,7 +159,7 @@ export default {
       this.deleteCallUuid = null;
     },
     canceldeleteCall() {
-      // console.debug("pages/calls/methods/canceldeleteCall"); //DELETE
+      console.debug("pages/calls/methods/canceldeleteCall"); //DELETE
 
       this.deleteCallUuid = null;
       this.dialog = false;
@@ -170,7 +170,7 @@ export default {
   },
 
   async created() {
-    // console.debug("pages/calls/created", this.$route); //DELETE
+    console.debug("pages/calls/created", this.$route); //DELETE
 
     const response = await fetchCalls();
 
@@ -180,8 +180,8 @@ export default {
     }));
     this.callsFetched = true;
 
-    // console.debug("pages/calls/calls", this.calls); //DELETE
-    // console.debug("pages/calls/callsFetched", this.callsFetched); //DELETE
+    console.debug("pages/calls/calls", this.calls); //DELETE
+    console.debug("pages/calls/callsFetched", this.callsFetched); //DELETE
   },
   mounted() {},
 };

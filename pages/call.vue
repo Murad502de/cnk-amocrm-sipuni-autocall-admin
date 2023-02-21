@@ -2,13 +2,19 @@
 .call-detail-page
   v-card.call-detail-page__card(width="800", elevation="7")
     .call-detail-page__card--head
-      v-list-item-title.text-h5.call-detail-page__title {{ meetingName }}
+      v-list-item-title.text-h5.call-detail-page__title(
+        v-if="callFetched"
+      ) {{ callName }}
+      Skeleton.text-h5.call-detail-page__title(
+        v-if="!callFetched"
+        height="24"
+      )
       .call-detail-page__card--actions
         v-btn.call-detail-page__card--actions-item(
           color="blue",
           width="128",
           height="36",
-          :disabled="meetingSaveLoader",
+          :disabled="meetingSaveLoader || !callFetched",
           @click="back"
         ) Назад
         v-btn.mr-4.call-detail-page__card--actions-item(
@@ -22,47 +28,48 @@
 
     .call-detail-page__card--body
       v-form.call-detail-page__call-info(
+        v-if="callFetched"
         ref="form",
         v-model="meetingValid",
         lazy-validation
       )
         v-text-field.call-detail-page__form-input(
-          v-model="meetingName",
-          label="Название комнаты Zoom",
+          v-model="callName",
+          label="Название списка обзвона",
           variant="outlined",
           color="blue",
           required,
-          :rules="meetingNameRules"
+          :rules="callNameRules"
         )
         v-text-field.call-detail-page__form-input(
-          v-model="accountId",
-          label="Account ID",
+          v-model="sipuniCallId",
+          label="ID списка обзвона в Sipuni",
           variant="outlined",
           color="blue",
           required,
-          :rules="accountIdRules"
+          :rules="sipuniCallIdRules"
         )
         v-text-field.call-detail-page__form-input(
-          v-model="clientId",
-          label="Client ID",
+          v-model="amoPipelineId",
+          label="ID воронки в amoCRM",
           variant="outlined",
           color="blue",
           required,
-          :rules="clientIdRules"
+          :rules="amoPipelineIdRules"
         )
-        v-text-field.call-detail-page__form-input(
-          v-model="clientSecret",
-          label="Client secret",
-          variant="outlined",
-          color="blue",
-          required,
-          :rules="clientSecretRules"
+
+      .call-detail-page__call-info(
+        v-if="!callFetched"
+      )
+        Skeleton.call-detail-page__form-input(
+          v-for="skeleton in 3"
+          height="56"
         )
 
   v-dialog(v-model="meetingEscapeDialog", max-width="500")
     v-card
       v-card-title.text-h5 Подтверждение ухода
-      v-card-text Вы действительно хотите вернуться к списку комнат Zoom? Внимание, все несохранённые изменения будут удалены.
+      v-card-text Вы действительно хотите вернуться к списку обзвонов? Внимание, все несохранённые изменения будут удалены.
       v-card-actions
         v-spacer
         v-btn(
@@ -74,14 +81,13 @@
 </template>
 
 <script>
-import {
-  createCall,
-  fetchCallDetail,
-  updateCall,
-} from "@/api/call/call"
+import { createCall, fetchCallDetail, updateCall } from "@/api/call/call";
+import Skeleton from "@/components/AppSkeleton";
 
 export default {
-  components: {},
+  components: {
+    Skeleton,
+  },
 
   props: {},
   data() {
@@ -89,13 +95,13 @@ export default {
       meetingSaveLoader: false,
       meetingValid: true,
       meetingEscapeDialog: false,
-
-      meetingName: "",
-      meetingNameRules: [(v) => !!v || "Обязательно к заполненнию"],
-      accountId: "",
-      accountIdRules: [(v) => !!v || "Обязательно к заполненнию"],
-      clientId: "",
-      clientIdRules: [(v) => !!v || "Обязательно к заполненнию"],
+      callFetched: false,
+      callName: "",
+      callNameRules: [(v) => !!v || "Обязательно к заполненнию"],
+      sipuniCallId: "",
+      sipuniCallIdRules: [(v) => !!v || "Обязательно к заполненнию"],
+      amoPipelineId: "",
+      amoPipelineIdRules: [(v) => !!v || "Обязательно к заполненнию"],
       clientSecret: "",
       clientSecretRules: [(v) => !!v || "Обязательно к заполненнию"],
     };
@@ -115,33 +121,30 @@ export default {
     /* SETTERS */
     /* HANDLERS */
     back() {
-      // console.debug("call/back"); //DELETE
+      console.debug("call/back"); //DELETE
 
       this.meetingEscapeDialog = true;
     },
     approveBack() {
-      // console.debug("call/approveBack"); //DELETE
+      console.debug("call/approveBack"); //DELETE
 
       this.meetingEscapeDialog = false;
       this.$router.push({ name: "index" });
     },
     async savecall() {
-      // console.debug("pages/call/methods/save/isNew", this.isNew); //DELETE
+      console.debug("pages/call/methods/save/isNew", this.isNew); //DELETE
 
       this.meetingSaveLoader = true;
 
       let uuidcall = "";
 
       if (this.isNew) {
-        // console.debug("pages/call/methods/save/new"); //DELETE
+        console.debug("pages/call/methods/save/new"); //DELETE
 
         //TODO: create new call
-        const response = await createCall(
-          this.meetingName,
-          this.clientSecret
-        );
+        const response = await createCall(this.callName, this.clientSecret);
 
-        // console.debug("pages/call/methods/save/new/response", response); //DELETE
+        console.debug("pages/call/methods/save/new/response", response); //DELETE
 
         if (response.status === 200) {
           uuidcall = response.callUuid;
@@ -154,15 +157,15 @@ export default {
           });
         }
       } else {
-        // console.debug("pages/call/methods/save/not-new"); //DELETE
+        console.debug("pages/call/methods/save/not-new"); //DELETE
 
         const response = await updateCall(
           this.uuidcall,
-          this.meetingName,
+          this.callName,
           this.clientSecret
         );
 
-        // console.debug("pages/call/methods/save/not-new/response", response); //DELETE
+        console.debug("pages/call/methods/save/not-new/response", response); //DELETE
 
         uuidcall = this.uuidcall;
       }
@@ -175,23 +178,22 @@ export default {
     /* HELPERS */
     /* ACTIONS */
     async fetch(uuidcall) {
-      // console.debug("pages/call/methods/fetch", this.isNew); //DELETE
-      // console.debug("pages/call/methods/this.uuidcall", this.uuidcall); //DELETE
-      // console.debug("pages/call/methods/uuidcall", uuidcall); //DELETE
+      console.debug("pages/call/methods/fetch", this.isNew); //DELETE
+      console.debug("pages/call/methods/this.uuidcall", this.uuidcall); //DELETE
+      console.debug("pages/call/methods/uuidcall", uuidcall); //DELETE
 
-      const response = await fetchCallDetail(
-        this.uuidcall || uuidcall
-      );
+      const response = await fetchCallDetail(this.uuidcall || uuidcall);
 
-      // console.debug("pages/call/methods/fetch/response", response); //DELETE
+      console.debug("pages/call/methods/fetch/response", response); //DELETE
 
       if (response.status === 200) {
         const call = response.call.data;
 
-        // console.debug("pages/call/methods/fetch/response/call", call); //DELETE
+        console.debug("pages/call/methods/fetch/response/call", call); //DELETE
 
-        this.meetingName = call.name;
-        this.clientSecret = call.code;
+        this.callName = call.name;
+        this.sipuniCallId = call.sipuni_call_id;
+        this.amoPipelineId = call.amo_pipeline_id;
       } else {
         alert("Ошибка при получении вебинара");
       }
@@ -199,13 +201,15 @@ export default {
   },
 
   async created() {
-    // console.debug("pages/call/created/route", this.$route); //DELETE
-    // console.debug("pages/call/created/uuidcall", this.uuidcall); //DELETE
-    // console.debug("pages/call/created/isNew", this.isNew); //DELETE
+    console.debug("pages/call/created/route", this.$route); //DELETE
+    console.debug("pages/call/created/uuidcall", this.uuidcall); //DELETE
+    console.debug("pages/call/created/isNew", this.isNew); //DELETE
 
     if (!this.isNew) {
       await this.fetch();
     }
+
+    this.callFetched = true;
   },
   mounted() {},
 };
