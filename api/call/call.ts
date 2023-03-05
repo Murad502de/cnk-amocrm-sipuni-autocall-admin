@@ -20,17 +20,33 @@ let error: Error = {};
 
 export const createCall = async (
   name: string,
-  sipuniCallId: number,
-  amoPipelineId: number
+  operatorExtensionNumber: number,
+  amoPipelineId: number,
+  startHours: string,
+  startMinutes: string,
+  endHours: string,
+  endMinutes: string,
+  autoRedialDelay: number
 ): Promise<CreateResponse> => {
   console.debug('api/call/calls/createCall/name', name); //DELETE
-  console.debug('api/call/calls/createCall/sipuniCallId', sipuniCallId); //DELETE
+  console.debug('api/call/calls/createCall/operatorExtensionNumber', operatorExtensionNumber); //DELETE
   console.debug('api/call/calls/createCall/amoPipelineId', amoPipelineId); //DELETE
+  console.debug('api/call/calls/createCall/startHours', startHours); //DELETE
+  console.debug('api/call/calls/createCall/startMinutes', startMinutes); //DELETE
+  console.debug('api/call/calls/createCall/endHours', endHours); //DELETE
+  console.debug('api/call/calls/createCall/endMinutes', endMinutes); //DELETE
+  console.debug('api/call/calls/createCall/autoRedialDelay', autoRedialDelay); //DELETE
+
 
   const payload = {
     name,
+    operator_extension_number: operatorExtensionNumber,
     amo_pipeline_id: amoPipelineId,
-    sipuni_call_id: sipuniCallId,
+    start_work_hours: startHours,
+    start_work_minutes: startMinutes,
+    end_work_hours: endHours,
+    end_work_minutes: endMinutes,
+    auto_redial_delay: autoRedialDelay,
   };
 
   console.debug('api/call/calls/createCall/payload', payload); //DELETE
@@ -71,18 +87,33 @@ export const fetchCallDetail = async (uuid: string): Promise<FetchResponse> => {
 export const updateCall = async (
   uuid: string,
   name: string,
-  sipuniCallId: number,
-  amoPipelineId: number
+  operatorExtensionNumber: number,
+  amoPipelineId: number,
+  startHours: string,
+  startMinutes: string,
+  endHours: string,
+  endMinutes: string,
+  autoRedialDelay: number
 ): Promise<Response> => {
   console.debug('api/call/calls/updateCall/uuid', uuid); //DELETE
   console.debug('api/call/calls/updateCall/name', name); //DELETE
-  console.debug('api/call/calls/updateCall/sipuniCallId', sipuniCallId); //DELETE
+  console.debug('api/call/calls/updateCall/operatorExtensionNumber', operatorExtensionNumber); //DELETE
   console.debug('api/call/calls/updateCall/amoPipelineId', amoPipelineId); //DELETE
+  console.debug('api/call/calls/updateCall/startHours', startHours); //DELETE
+  console.debug('api/call/calls/updateCall/startMinutes', startMinutes); //DELETE
+  console.debug('api/call/calls/updateCall/endHours', endHours); //DELETE
+  console.debug('api/call/calls/updateCall/endMinutes', endMinutes); //DELETE
+  console.debug('api/call/calls/updateCall/autoRedialDelay', autoRedialDelay); //DELETE
 
   const payload = {
     name,
+    operator_extension_number: operatorExtensionNumber,
     amo_pipeline_id: amoPipelineId,
-    sipuni_call_id: sipuniCallId,
+    start_work_hours: startHours,
+    start_work_minutes: startMinutes,
+    end_work_hours: endHours,
+    end_work_minutes: endMinutes,
+    auto_redial_delay: autoRedialDelay,
   };
 
   console.debug('api/call/calls/createCall/payload', payload); //DELETE

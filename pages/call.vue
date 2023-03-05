@@ -2,11 +2,9 @@
 .call-detail-page
   v-card.call-detail-page__card(width="800", elevation="7")
     .call-detail-page__card--head
-      v-list-item-title.text-h5.call-detail-page__title(
-        v-if="callFetched"
-      ) {{ callName }}
+      v-list-item-title.text-h5.call-detail-page__title(v-if="callFetched") {{ callName }}
       Skeleton.text-h5.call-detail-page__title(
-        v-if="!callFetched"
+        v-if="!callFetched",
         height="24"
       )
       .call-detail-page__card--actions
@@ -28,26 +26,26 @@
 
     .call-detail-page__card--body
       v-form.call-detail-page__call-info(
-        v-show="callFetched"
+        v-show="callFetched",
         ref="form",
         v-model="meetingValid",
         lazy-validation
       )
         v-text-field.call-detail-page__form-input(
           v-model="callName",
-          label="Название списка обзвона",
+          label="Название списка автообзвона",
           variant="outlined",
           color="blue",
           required,
           :rules="callNameRules"
         )
         v-text-field.call-detail-page__form-input(
-          v-model="sipuniCallId",
-          label="ID списка обзвона в Sipuni",
+          v-model="operatorExtensionNumber",
+          label="Внутренний номер оператора в Sipuni",
           variant="outlined",
           color="blue",
           required,
-          :rules="sipuniCallIdRules"
+          :rules="operatorExtensionNumberRules"
         )
         v-text-field.call-detail-page__form-input(
           v-model="amoPipelineId",
@@ -58,11 +56,64 @@
           :rules="amoPipelineIdRules"
         )
 
-      .call-detail-page__call-info(
-        v-show="!callFetched"
-      )
+        v-list-item-title Рабочее время (МСК)
+
+        .work-time
+          .work-time__start
+            v-select(
+              label="Часы",
+              variant="outlined",
+              color="blue",
+              width="200",
+              :items="hours",
+              v-model="startHours",
+              :rules="timeRules"
+            )
+            v-select(
+              label="Минуты",
+              variant="outlined",
+              color="blue",
+              width="200",
+              :items="minutes",
+              v-model="startMinutes",
+              :rules="timeRules"
+            )
+
+          .work-time__divider -
+
+          .work-time__end
+            v-select(
+              label="Часы",
+              variant="outlined",
+              color="blue",
+              :items="hours",
+              v-model="endHours",
+              :rules="timeRules"
+            )
+            v-select(
+              label="Минуты",
+              variant="outlined",
+              color="blue",
+              :items="minutes",
+              v-model="endMinutes",
+              :rules="timeRules"
+            )
+
+        v-list-item-title Задержка автодозвона
+
+        .auto_redial_delay
+          v-select(
+            label="Минуты",
+            variant="outlined",
+            color="blue",
+            :items="autoRedialDelays",
+            v-model="autoRedialDelay",
+            :rules="timeRules"
+          )
+
+      .call-detail-page__call-info(v-show="!callFetched")
         Skeleton.call-detail-page__form-input(
-          v-for="skeleton in 3"
+          v-for="skeleton in 3",
           height="56"
         )
 
@@ -98,12 +149,111 @@ export default {
       callFetched: false,
       callName: "",
       callNameRules: [(v) => !!v || "Обязательно к заполненнию"],
-      sipuniCallId: "",
-      sipuniCallIdRules: [(v) => !!v || "Обязательно к заполненнию"],
+      operatorExtensionNumber: "",
+      operatorExtensionNumberRules: [(v) => !!v || "Обязательно к заполненнию"],
       amoPipelineId: "",
       amoPipelineIdRules: [(v) => !!v || "Обязательно к заполненнию"],
       clientSecret: "",
       clientSecretRules: [(v) => !!v || "Обязательно к заполненнию"],
+
+      timeRules: [(v) => !!v || "Обязательно к заполненнию"],
+
+      startHours: "",
+      startMinutes: "",
+      endHours: "",
+      endMinutes: "",
+
+      hours: [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+      ],
+      minutes: [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27",
+        "28",
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "35",
+        "36",
+        "37",
+        "38",
+        "39",
+        "40",
+        "41",
+        "42",
+        "43",
+        "44",
+        "45",
+        "46",
+        "47",
+        "48",
+        "49",
+        "50",
+        "51",
+        "52",
+        "53",
+        "54",
+        "55",
+        "56",
+        "57",
+        "58",
+        "59",
+      ],
+
+      autoRedialDelay: "",
+      autoRedialDelays: [5, 10, 15, 20, 25, 30],
     };
   },
   computed: {
@@ -144,8 +294,13 @@ export default {
         //TODO: create new call
         const response = await createCall(
           this.callName,
-          this.sipuniCallId,
-          this.amoPipelineId
+          this.operatorExtensionNumber,
+          this.amoPipelineId,
+          this.startHours,
+          this.startMinutes,
+          this.endHours,
+          this.endMinutes,
+          this.autoRedialDelay
         );
 
         console.debug("pages/call/methods/save/new/response", response); //DELETE
@@ -166,8 +321,13 @@ export default {
         const response = await updateCall(
           this.uuidcall,
           this.callName,
-          this.sipuniCallId,
-          this.amoPipelineId
+          this.operatorExtensionNumber,
+          this.amoPipelineId,
+          this.startHours,
+          this.startMinutes,
+          this.endHours,
+          this.endMinutes,
+          this.autoRedialDelay
         );
 
         console.debug("pages/call/methods/save/not-new/response", response); //DELETE
@@ -197,8 +357,13 @@ export default {
         console.debug("pages/call/methods/fetch/response/call", call); //DELETE
 
         this.callName = call.name;
-        this.sipuniCallId = call.sipuni_call_id;
         this.amoPipelineId = call.amo_pipeline_id;
+        this.operatorExtensionNumber = call.operator_extension_number;
+        this.startHours = call.start_work_hours;
+        this.startMinutes = call.start_work_minutes;
+        this.endHours = call.end_work_hours;
+        this.endMinutes = call.end_work_minutes;
+        this.autoRedialDelay = call.auto_redial_delay;
       } else {
         alert("Ошибка при получении вебинара");
       }
@@ -278,6 +443,41 @@ export default {
         }
       }
     }
+  }
+
+  .work-time,
+  .work-time__start,
+  .work-time__end {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .work-time {
+    margin-top: 24px;
+
+    .work-time__start,
+    .work-time__end {
+      .v-input {
+        width: 80px;
+        margin-left: 14px;
+
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+    }
+
+    .work-time__divider {
+      margin: 0 18px 22px 18px;
+    }
+  }
+
+  .auto_redial_delay {
+    margin-top: 24px;
+    width: 82px;
   }
 }
 </style>
