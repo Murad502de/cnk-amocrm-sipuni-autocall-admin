@@ -26,7 +26,8 @@ export const createCall = async (
   startMinutes: string,
   endHours: string,
   endMinutes: string,
-  autoRedialDelay: number
+  autoRedialDelay: number,
+  autoRedialAttempts: number
 ): Promise<CreateResponse> => {
   console.debug('api/call/calls/createCall/name', name); //DELETE
   console.debug('api/call/calls/createCall/operatorExtensionNumber', operatorExtensionNumber); //DELETE
@@ -36,6 +37,7 @@ export const createCall = async (
   console.debug('api/call/calls/createCall/endHours', endHours); //DELETE
   console.debug('api/call/calls/createCall/endMinutes', endMinutes); //DELETE
   console.debug('api/call/calls/createCall/autoRedialDelay', autoRedialDelay); //DELETE
+  console.debug('api/call/calls/createCall/autoRedialAttempts', autoRedialAttempts); //DELETE
 
 
   const payload = {
@@ -47,6 +49,7 @@ export const createCall = async (
     end_work_hours: endHours,
     end_work_minutes: endMinutes,
     auto_redial_delay: autoRedialDelay,
+    auto_redial_attempts: autoRedialAttempts,
   };
 
   console.debug('api/call/calls/createCall/payload', payload); //DELETE
@@ -93,7 +96,8 @@ export const updateCall = async (
   startMinutes: string,
   endHours: string,
   endMinutes: string,
-  autoRedialDelay: number
+  autoRedialDelay: number,
+  autoRedialAttempts: number
 ): Promise<Response> => {
   console.debug('api/call/calls/updateCall/uuid', uuid); //DELETE
   console.debug('api/call/calls/updateCall/name', name); //DELETE
@@ -104,6 +108,7 @@ export const updateCall = async (
   console.debug('api/call/calls/updateCall/endHours', endHours); //DELETE
   console.debug('api/call/calls/updateCall/endMinutes', endMinutes); //DELETE
   console.debug('api/call/calls/updateCall/autoRedialDelay', autoRedialDelay); //DELETE
+  console.debug('api/call/calls/updateCall/autoRedialAttempts', autoRedialAttempts); //DELETE
 
   const payload = {
     name,
@@ -114,6 +119,7 @@ export const updateCall = async (
     end_work_hours: endHours,
     end_work_minutes: endMinutes,
     auto_redial_delay: autoRedialDelay,
+    auto_redial_attempts: autoRedialAttempts,
   };
 
   console.debug('api/call/calls/createCall/payload', payload); //DELETE

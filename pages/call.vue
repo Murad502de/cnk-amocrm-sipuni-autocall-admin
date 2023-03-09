@@ -111,6 +111,18 @@
             :rules="timeRules"
           )
 
+        v-list-item-title Количество попыток дозвона
+
+        .auto_redial_delay
+          v-select(
+            label="Количество",
+            variant="outlined",
+            color="blue",
+            :items="autoRedialAttempts",
+            v-model="autoRedialAttemptModal",
+            :rules="timeRules"
+          )
+
       .call-detail-page__call-info(v-show="!callFetched")
         Skeleton.call-detail-page__form-input(
           v-for="skeleton in 3",
@@ -254,6 +266,9 @@ export default {
 
       autoRedialDelay: "",
       autoRedialDelays: [5, 10, 15, 20, 25, 30],
+
+      autoRedialAttemptModal: "",
+      autoRedialAttempts: [1, 2, 3, 5, 10, 15, 20],
     };
   },
   computed: {
@@ -300,7 +315,8 @@ export default {
           this.startMinutes,
           this.endHours,
           this.endMinutes,
-          this.autoRedialDelay
+          this.autoRedialDelay,
+          this.autoRedialAttemptModal
         );
 
         console.debug("pages/call/methods/save/new/response", response); //DELETE
@@ -327,7 +343,8 @@ export default {
           this.startMinutes,
           this.endHours,
           this.endMinutes,
-          this.autoRedialDelay
+          this.autoRedialDelay,
+          this.autoRedialAttemptModal
         );
 
         console.debug("pages/call/methods/save/not-new/response", response); //DELETE
@@ -364,6 +381,7 @@ export default {
         this.endHours = call.end_work_hours;
         this.endMinutes = call.end_work_minutes;
         this.autoRedialDelay = call.auto_redial_delay;
+        this.autoRedialAttemptModal = call.auto_redial_attempts;
       } else {
         alert("Ошибка при получении вебинара");
       }
