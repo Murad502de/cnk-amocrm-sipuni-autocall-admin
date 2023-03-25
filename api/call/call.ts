@@ -27,7 +27,9 @@ export const createCall = async (
   endHours: string,
   endMinutes: string,
   autoRedialDelay: number,
-  autoRedialAttempts: number
+  autoRedialAttempts: number,
+  callThroughTree: string,
+  treeNumber: string
 ): Promise<CreateResponse> => {
   console.debug('api/call/calls/createCall/name', name); //DELETE
   console.debug('api/call/calls/createCall/operatorExtensionNumber', operatorExtensionNumber); //DELETE
@@ -38,6 +40,8 @@ export const createCall = async (
   console.debug('api/call/calls/createCall/endMinutes', endMinutes); //DELETE
   console.debug('api/call/calls/createCall/autoRedialDelay', autoRedialDelay); //DELETE
   console.debug('api/call/calls/createCall/autoRedialAttempts', autoRedialAttempts); //DELETE
+  console.debug('api/call/calls/createCall/callThroughTree', callThroughTree); //DELETE
+  console.debug('api/call/calls/createCall/treeNumber', treeNumber); //DELETE
 
 
   const payload = {
@@ -50,6 +54,8 @@ export const createCall = async (
     end_work_minutes: endMinutes,
     auto_redial_delay: autoRedialDelay,
     auto_redial_attempts: autoRedialAttempts,
+    call_through_tree: callThroughTree,
+    tree_number: treeNumber,
   };
 
   console.debug('api/call/calls/createCall/payload', payload); //DELETE
@@ -97,7 +103,9 @@ export const updateCall = async (
   endHours: string,
   endMinutes: string,
   autoRedialDelay: number,
-  autoRedialAttempts: number
+  autoRedialAttempts: number,
+  callThroughTree: string,
+  treeNumber: string,
 ): Promise<Response> => {
   console.debug('api/call/calls/updateCall/uuid', uuid); //DELETE
   console.debug('api/call/calls/updateCall/name', name); //DELETE
@@ -109,6 +117,8 @@ export const updateCall = async (
   console.debug('api/call/calls/updateCall/endMinutes', endMinutes); //DELETE
   console.debug('api/call/calls/updateCall/autoRedialDelay', autoRedialDelay); //DELETE
   console.debug('api/call/calls/updateCall/autoRedialAttempts', autoRedialAttempts); //DELETE
+  console.debug('api/call/calls/updateCall/callThroughTree', callThroughTree); //DELETE
+  console.debug('api/call/calls/updateCall/treeNumber', treeNumber); //DELETE
 
   const payload = {
     name,
@@ -120,6 +130,8 @@ export const updateCall = async (
     end_work_minutes: endMinutes,
     auto_redial_delay: autoRedialDelay,
     auto_redial_attempts: autoRedialAttempts,
+    call_through_tree: callThroughTree,
+    tree_number: treeNumber,
   };
 
   console.debug('api/call/calls/createCall/payload', payload); //DELETE

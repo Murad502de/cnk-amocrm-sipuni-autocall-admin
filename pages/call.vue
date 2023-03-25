@@ -19,7 +19,7 @@
           color="success",
           width="128",
           height="36",
-          :disabled="!meetingValid",
+          :disabled="(!meetingValid && !valid) || !callFetched",
           :loading="meetingSaveLoader",
           @click="savecall"
         ) Сохранить
@@ -47,6 +47,23 @@
           required,
           :rules="operatorExtensionNumberRules"
         )
+
+        v-checkbox.call-detail-page__form-tree-checkbox(
+          label="Звонок на внешний номер через схему",
+          v-model="callThroughTree",
+          color="info"
+        )
+
+        v-text-field.call-detail-page__form-input(
+          v-model="treeNumber",
+          label="Номер схемы в Sipuni",
+          variant="outlined",
+          color="blue",
+          :disabled="!callThroughTree",
+          :require="callThroughTree",
+          :rules="callThroughTree ? treeNumberRules : []"
+        )
+
         v-text-field.call-detail-page__form-input(
           v-model="amoPipelineId",
           label="ID воронки в amoCRM",
@@ -157,12 +174,16 @@ export default {
     return {
       meetingSaveLoader: false,
       meetingValid: true,
+      valid: true,
       meetingEscapeDialog: false,
       callFetched: false,
+      callThroughTree: false,
       callName: "",
+      treeNumber: "",
       callNameRules: [(v) => !!v || "Обязательно к заполненнию"],
       operatorExtensionNumber: "",
       operatorExtensionNumberRules: [(v) => !!v || "Обязательно к заполненнию"],
+      treeNumberRules: [(v) => !!v || "Обязательно к заполненнию"],
       amoPipelineId: "",
       amoPipelineIdRules: [(v) => !!v || "Обязательно к заполненнию"],
       clientSecret: "",
@@ -280,7 +301,14 @@ export default {
     },
   },
 
-  watch: {},
+  watch: {
+    callThroughTree() {
+      this.additionalValid();
+    },
+    treeNumber() {
+      this.additionalValid();
+    },
+  },
   methods: {
     /* GETTERS */
     /* SETTERS */
@@ -316,7 +344,9 @@ export default {
           this.endHours,
           this.endMinutes,
           this.autoRedialDelay,
-          this.autoRedialAttemptModal
+          this.autoRedialAttemptModal,
+          this.callThroughTree,
+          this.treeNumber
         );
 
         console.debug("pages/call/methods/save/new/response", response); //DELETE
@@ -344,7 +374,9 @@ export default {
           this.endHours,
           this.endMinutes,
           this.autoRedialDelay,
-          this.autoRedialAttemptModal
+          this.autoRedialAttemptModal,
+          this.callThroughTree,
+          this.treeNumber
         );
 
         console.debug("pages/call/methods/save/not-new/response", response); //DELETE
@@ -358,6 +390,20 @@ export default {
     },
 
     /* HELPERS */
+    additionalValid() {
+      this.valid =
+        !!this.callName &&
+        !!this.operatorExtensionNumber &&
+        (this.callThroughTree ? !!this.treeNumber : true) &&
+        !!this.amoPipelineId &&
+        !!this.startHours &&
+        !!this.startMinutes &&
+        !!this.endHours &&
+        !!this.endMinutes &&
+        !!this.autoRedialDelay &&
+        !!this.autoRedialAttemptModal;
+    },
+
     /* ACTIONS */
     async fetch(uuidcall) {
       console.debug("pages/call/methods/fetch", this.isNew); //DELETE
@@ -382,6 +428,8 @@ export default {
         this.endMinutes = call.end_work_minutes;
         this.autoRedialDelay = call.auto_redial_delay;
         this.autoRedialAttemptModal = call.auto_redial_attempts;
+        this.callThroughTree = !!call.call_through_tree;
+        this.treeNumber = call.tree_number;
       } else {
         alert("Ошибка при получении вебинара");
       }
@@ -422,6 +470,26 @@ export default {
 
       &:first-child {
         margin-top: 0;
+      }
+    }
+
+    &-tree-checkbox {
+      margin-left: -10px;
+
+      &.v-input {
+        position: relative;
+        height: 40px;
+      }
+
+      .v-input__control {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 40px;
+      }
+
+      .v-input__details {
+        display: none;
       }
     }
   }
